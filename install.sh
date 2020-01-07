@@ -13,7 +13,7 @@ mkdir -p qjs && curl "https://bellard.org/quickjs/quickjs-${QJS_VERSION}.tar.xz"
 
 if [ "$ARCH" = "win" ]; then
   echo "editing makefile for windows"
-  sed -i '' 's/#CONFIG_WIN32/CONFIG_WIN32/' qjs/Makefile
+  sed -i 's/#CONFIG_WIN32/CONFIG_WIN32/' qjs/Makefile
 fi
 
 cd qjs && make
