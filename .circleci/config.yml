@@ -1,7 +1,7 @@
 version: 2.1
 
 commands:
-  build:
+  build_binary:
     description: 'Build the binary for arch'
     parameters:
       csp_version:
@@ -26,20 +26,20 @@ jobs:
     macos:
       xcode: '9.0'
     steps:
-      - build:
+      - build_binary:
           arch: 'darwin'
   build_linux:
     machine:
       image: ubuntu-1604:201903-01
       docker_layer_caching: true
     steps:
-      - build:
+      - build_binary:
           arch: 'linux'
   build_win:
     docker:
       - image: mwaeckerlin/mingw:latest
     steps:
-      - build:
+      - build_binary:
           arch: 'win'
 
 
