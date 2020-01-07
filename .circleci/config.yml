@@ -39,6 +39,11 @@ jobs:
     docker:
       - image: mwaeckerlin/mingw:latest
     steps:
+      - run:
+          name: 'install curl'
+          command: |
+            apt-get update \
+              && apt-get install --no-install-recommends --no-install-suggests -y curl
       - build_binary:
           arch: 'win'
 
