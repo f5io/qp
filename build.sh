@@ -1,5 +1,7 @@
 : ${ARCH:="darwin"}
 
+set +x
+
 mkdir -p "bin/$ARCH"
 
 #  -fno-bigint \ - not supported in quickjs versions prior to 2020-01-05
@@ -12,3 +14,5 @@ mkdir -p "bin/$ARCH"
   -fno-map \
   -fno-typedarray \
   src/main.js
+
+ls -lh "bin/$ARCH"

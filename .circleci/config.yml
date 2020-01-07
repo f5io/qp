@@ -16,10 +16,15 @@ commands:
       - checkout
       - run:
           name: 'install deps'
-          command: CSP_VERSION=<< parameters.csp_version >> QJS_VERSION=<< parameters.qjs_version >> sh install.sh
+          command: |
+            ARCH=<< parameters.arch >> \
+              CSP_VERSION=<< parameters.csp_version >> \
+              QJS_VERSION=<< parameters.qjs_version >> \
+              sh install.sh
       - run:
           name: 'build bin'
-          command: ARCH=<< parameters.arch >> sh build.sh
+          command: |
+            ARCH=<< parameters.arch >> sh build.sh
 
 jobs:
   build_darwin:
