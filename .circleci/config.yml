@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@1.0.0
+
 commands:
   build_binary:
     description: 'Build the binary for arch'
@@ -40,17 +43,25 @@ jobs:
     steps:
       - build_binary:
           arch: 'linux'
-  build_win:
+  prepare_win:
     docker:
-      - image: mwaeckerlin/mingw:latest
+      - image: burningdaylight/docker-mingw-qt5
+    environment:
+      ARCH: win
     steps:
+      - checkout
       - run:
-          name: 'install curl'
-          command: |
-            apt-get update \
-              && apt-get install --no-install-recommends --no-install-suggests -y curl
-      - build_binary:
-          arch: 'win'
+          name: 'compile qjs'
+          command: sh install.sh
+      - persist_to_workspace:
+          root: ./qjs
+  build_win:
+    executor: win/default
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./qjs
+      - run: ls -lah qjs
 
 workflows:
   version: 2
@@ -58,7 +69,10 @@ workflows:
     jobs:
       - build_darwin
       - build_linux
-      - build_win
+      - prepare_win
+      - build_win:
+          requires:
+            - prepare_win
 
 
 

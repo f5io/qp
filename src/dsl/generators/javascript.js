@@ -43,6 +43,10 @@ const defaultCallExpressions = {
     const field = traverseNode(node.arguments[0]);
     return input => field(input)?.length;
   },
+  from_entries: (node, { traverseArray }) => {
+    const kv = traverseArray(node.arguments);
+    return input => Object.fromEntries(kv.map(f => f(input)));
+  }
 };
 
 const toQuery = (ast, { callExpressions = {} } = {}) => {

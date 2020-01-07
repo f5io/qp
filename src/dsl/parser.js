@@ -169,7 +169,7 @@ export default function parser({ tokens, toSource }) {
     currentNode = node;
     if (isType(Types.AsExpression, next.peek())) {
       factor();
-    } else if (isType(Types.ParenRight, next.peek())) {
+    } else if (isType(Types.Punctuation, next.peek())) {
       symbol = next();
     }
   }
@@ -292,6 +292,7 @@ export default function parser({ tokens, toSource }) {
       case Types.ParenLeft: {
         if (
           isType([ Types.Punctuation, Types.ParenRight ], next.peek(2))
+          || isType(Types.ParenLeft, next.peek()) // support arrays within arrays
           || isType(Types.OptionExpression, next.peek(-1))
         ) {
           array();
