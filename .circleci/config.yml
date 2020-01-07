@@ -28,11 +28,17 @@ commands:
           name: 'build bin'
           command: |
             ARCH=<< parameters.arch >> sh build.sh
+      - persist_to_workspace:
+          root: /workdir
+          paths:
+            - bin/
+       
 
 jobs:
   build_darwin:
     macos:
       xcode: '9.0'
+    working_directory: /workdir 
     steps:
       - build_binary:
           arch: 'darwin'
@@ -40,32 +46,19 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
       docker_layer_caching: true
+    working_directory: /workdir 
     steps:
       - build_binary:
           arch: 'linux'
-  prepare_win:
-    docker:
-      - image: burningdaylight/docker-mingw-qt5
-    environment:
-      ARCH: win
-    working_directory: /workdir 
+  release:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+    working_directory: /workdir
     steps:
-      - checkout
-      - run:
-          name: 'compile qjs'
-          command: sh install.sh
-      - persist_to_workspace:
-          root: /workdir
-          paths:
-            - qjs/
-            - src/csp.js
-  build_win:
-    executor: win/default
-    steps:
-      - checkout
       - attach_workspace:
-          at: . 
-      - run: ls -lah qjs
+          at: .
+      - run: tree bin
 
 workflows:
   version: 2
@@ -73,10 +66,10 @@ workflows:
     jobs:
       - build_darwin
       - build_linux
-      - prepare_win
-      - build_win:
+      - release:
           requires:
-            - prepare_win
+            - build_darwin
+            - build_linux
 
 
 
