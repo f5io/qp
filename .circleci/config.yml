@@ -48,6 +48,7 @@ jobs:
       - image: burningdaylight/docker-mingw-qt5
     environment:
       ARCH: win
+    working_directory: /workdir 
     steps:
       - checkout
       - run:
