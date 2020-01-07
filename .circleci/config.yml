@@ -54,6 +54,7 @@ jobs:
           name: 'compile qjs'
           command: sh install.sh
       - persist_to_workspace:
+          root: /workdir
           paths:
             - qjs/
             - src/csp.js
