@@ -1,0 +1,45 @@
+version: 2.1
+
+commands:
+  build:
+    description: 'Build the binary for arch'
+    parameters:
+      csp_version:
+        default: 1.0.8
+        type: string
+      qjs_version:
+        default: 2019-12-21
+        type: string
+      arch:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: 'install deps'
+          command: CSP_VERSION=<< parameters.csp_version >> QJS_VERSION=<< parameters.qjs_version >> sh install.sh
+      - run:
+          name: 'build bin'
+          command: ARCH=<< parameters.arch >> sh build.sh
+
+jobs:
+  build_darwin:
+    macos:
+      xcode: '9.0'
+    steps:
+      - build:
+          arch: 'darwin'
+  build_linux:
+    machine:
+      image: ubuntu-1604:201903-01
+      docker_layer_caching: true
+    steps:
+      - build:
+          arch: 'linux'
+  build_win:
+    docker:
+      image: mwaeckerlin/mingw:latest
+    steps:
+      - build:
+          arch: 'win'
+
+
