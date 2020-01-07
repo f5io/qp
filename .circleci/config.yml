@@ -54,13 +54,15 @@ jobs:
           name: 'compile qjs'
           command: sh install.sh
       - persist_to_workspace:
-          root: ./qjs
+          paths:
+            - qjs/
+            - src/csp.js
   build_win:
     executor: win/default
     steps:
       - checkout
       - attach_workspace:
-          at: ./qjs
+          at: . 
       - run: ls -lah qjs
 
 workflows:
