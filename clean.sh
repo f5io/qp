@@ -1,3 +1,5 @@
+set +x
+
 echo "removing @paybase/csp"
 rm -f src/csp.js
 
