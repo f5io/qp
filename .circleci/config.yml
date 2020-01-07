@@ -42,4 +42,13 @@ jobs:
       - build_binary:
           arch: 'win'
 
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_darwin
+      - build_linux
+      - build_win
+
+
 
