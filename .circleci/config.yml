@@ -37,7 +37,7 @@ jobs:
           arch: 'linux'
   build_win:
     docker:
-      image: mwaeckerlin/mingw:latest
+      - image: mwaeckerlin/mingw:latest
     steps:
       - build:
           arch: 'win'
