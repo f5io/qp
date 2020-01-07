@@ -29,7 +29,7 @@ commands:
           command: |
             ARCH=<< parameters.arch >> sh build.sh
       - persist_to_workspace:
-          root: /workdir
+          root: . 
           paths:
             - bin/
        
@@ -38,7 +38,6 @@ jobs:
   build_darwin:
     macos:
       xcode: '9.0'
-    working_directory: /workdir 
     steps:
       - build_binary:
           arch: 'darwin'
@@ -46,7 +45,6 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
       docker_layer_caching: true
-    working_directory: /workdir 
     steps:
       - build_binary:
           arch: 'linux'
