@@ -6,6 +6,14 @@
 ▀
 </pre></center>
 
+<span style="font-size: 15pt; font-family: 'Courier New', Monospace; line-height: .5;">
+▄▀▀▀█ █▀▀▀▄<br/>
+█&nbsp;&nbsp;&nbsp;█ █&nbsp;&nbsp;&nbsp;█<br/>
+▀▀ █ ▒ ▀▀<br/>
+· - █▄▄ ▪ ·<br/>
+▀&nbsp;&nbsp;
+</span>
+
     ▄▀▀▀█ █▀▀▀▄
     █   █ █   █   qp - 0.0.1
      ▀▀ █ ▒ ▀▀    query-pipe: command-line (ND)JSON querying 
