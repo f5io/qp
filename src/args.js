@@ -1,5 +1,5 @@
-export const parseArgs = config =>
-  Object.fromEntries(Object.entries(config).map(([ k, v ]) => {
+export function parseArgs(config) {
+  return Object.fromEntries(Object.entries(config).map(([ k, v ]) => {
     let val = v.default || false;
     switch (v.type) {
       case 'boolean':
@@ -12,4 +12,5 @@ export const parseArgs = config =>
     }
     return [ k, val ];
   }));
+}
 

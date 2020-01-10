@@ -1,5 +1,4 @@
 import Types from '../rules/types.js';
-import { upperCase } from '../dsl_utils.js';
 const { isType, invariant: inv } = Types;
 
 const unsupported = syntax => {
@@ -66,20 +65,34 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
   }
 
   function traverseCallExpression(node) {
-    const call = callExpr[node.name];
-    if (!call) return unsupported(`CallExpression: ${upperCase(node.name)}`);
+    const call = callExpr[node.name.toLowerCase()];
+    if (!call) return unsupported(`CallExpression: ${node.name}`);
     return call(node, { traverseNode, traverseArray, Types, invariant });
   }
 
-  function traverseSelectFields(node) {
-    switch (node.type) {
-      case Types.AsExpression:
-        return [ node.prop.value, traverseNode(node.value) ];
-      case Types.FieldIdentifier:
-        return [ node.value, traverseNode(node) ];
-      default:
-        return null;
+  function traverseSelect(node) {
+    const roots = [], keyed = [];
+
+    for (const field of node.fields) {
+      if (isType(Types.FieldIdentifier, field)) {
+        const value = traverseNode(field);
+        keyed.push([ field.value, value ]);
+      } else if (isType(Types.AsExpression, field)) {
+        const value = traverseNode(field.value);
+        if (isType(Types.Wildcard, field.prop)) {
+          return value;
+        } else {
+          keyed.push([ field.prop.value, value ]);
+        }
+      } else if (isType(Types.Wildcard, field)) {
+        roots.push(traverseNode(field));
+      } else return traverseNode(field);
     }
+
+    return input => Object.assign(
+      roots.reduce((acc, f) => Object.assign(acc, f(input)), {}),
+      Object.fromEntries(keyed.map(([ k, v ]) => [ k, v(input) ])),
+    );
   }
 
   function traverseBinaryExpression(node) {
@@ -88,13 +101,14 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
       case 'ilike':
       case 'not like':
       case 'not ilike': {
-        const [ f, re ] = isType(Types.FieldIdentifier, node.left)
-          ? [ node.left, node.right ]
-          : [ node.right, node.left ];
+        const types = [ Types.MatcherLiteral, Types.StringLiteral ];
+        const [ matcher, target ] = isType(types, node.right)
+          ? [ node.right, node.left ]
+          : [ invariant(types, node.left), node.right ];
 
         const flags = node.operator.value.includes('il') ? 'i' : void 0;
-        const regex = toRegex(re.value, flags);
-        const field = traverseNode(f, '');
+        const regex = toRegex(matcher.value, flags);
+        const field = traverseNode(target, '');
         const inversed = node.operator.value.includes('not');
 
         return inversed
@@ -120,7 +134,7 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
     }
   }
 
-  function chainFromPath(path, coalesce) {
+  function chainFromPath(path, coalesce = null) {
     const p = path.split('.');
     return (input) => p.reduce((o, k) => o?.[k], input) ?? coalesce;
   }
@@ -129,7 +143,7 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
     if (!node) return null;
     switch (node.type) {
       case Types.Wildcard:
-        return x => x;
+        return input => input;
       case Types.StringLiteral:
       case Types.NumberLiteral:
       case Types.BooleanLiteral:
@@ -159,11 +173,7 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
       case Types.BinaryExpression:
         return traverseBinaryExpression(node);
       case Types.SelectExpression:
-        if (!isType(Types.Wildcard, node.fields[0])) {
-          const fields = node.fields.map(traverseSelectFields).filter(x => x != null);
-          select = input =>
-            Object.fromEntries(fields.map(([ k, v ]) => [ k, v(input) ]));
-        }
+        select = traverseSelect(node);
         return;
       case Types.LimitExpression:
         limit = node.count.value;

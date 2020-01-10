@@ -1,3 +1,6 @@
+import { setTimeout } from 'os';
+import * as std from 'std';
+
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const profiles = [
@@ -10,9 +13,9 @@ const profiles = [
 ];
 
 (async () => {
-  process.stdout.on('error', e => e.code === 'EPIPE' && process.exit());
   for (let i = 0; i < Infinity; i++) {
-    console.log(JSON.stringify({ a: i, ...profiles[i % 5] }));
-    await timeout(10);
+    console.log(JSON.stringify({ id: i, ...profiles[i % 5] }));
+    std.out.flush();
+    await timeout(50);
   }
 })();

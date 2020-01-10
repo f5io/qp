@@ -1,4 +1,4 @@
-set +x
+set +e
 
 : ${CSP_VERSION:="1.0.8"}
 : ${QJS_VERSION:="2019-12-21"}

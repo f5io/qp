@@ -89,7 +89,6 @@ ${original.split('\n').map((line, i) => {
 
 /* eslint-enable indent */
 
-
 const printToken = token => {
   if (!token) return '';
   switch (token.type) {
@@ -121,34 +120,6 @@ const printToken = token => {
 const printTokens = tokens =>
   tokens.reduce((acc, t) => acc += printToken(t), '');
 
-const findInTree = (node, predicate) => {
-  let found = [];
-  switch (node.type) {
-    case Types.Query:
-      if (predicate(node)) found = found.concat(node);
-      found = flatten(
-        found.concat(
-          node.body.map(x => findInTree(x, predicate))
-        )
-      );
-      break;
-    case Types.BinaryExpression:
-    case Types.LogicalExpression:
-      if (predicate(node)) found = found.concat(node);
-      found = flatten(
-        found.concat(
-          findInTree(node.left, predicate),
-          findInTree(node.right, predicate),
-        )
-      );
-      break;
-    default:
-      if (predicate(node)) found = found.concat(node);
-      break;
-  }
-  return found;
-};
-
 export default Object.assign(
   Types,
   {
@@ -156,6 +127,5 @@ export default Object.assign(
     invariant, Ignore,
     syntaxError, typeError,
     printToken, printTokens,
-    findInTree,
   }
 );

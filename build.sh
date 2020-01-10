@@ -1,6 +1,6 @@
 : ${ARCH:="darwin"}
 
-set +x
+set +e
 
 mkdir -p "bin/$ARCH"
 

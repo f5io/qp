@@ -4,9 +4,11 @@ import { put } from './csp.js';
 const [
   LEFT_PAREN, LEFT_BRACK,
   RIGHT_PAREN, RIGHT_BRACK,
+  QUOTE, ESCAPE_CHAR,
 ] = [
   '{'.charCodeAt(), '['.charCodeAt(),
-  '}'.charCodeAt(), ']'.charCodeAt()
+  '}'.charCodeAt(), ']'.charCodeAt(),
+  '"'.charCodeAt(), '\\'.charCodeAt(),
 ];
 
 const WHITESPACE = [
@@ -17,35 +19,37 @@ const WHITESPACE = [
   0x202f, 0x205f, 0x2060, 0x3000, 0xfeff,
 ];
 
-export const readJSON = async (file, out) => {
-  "use strip";
-  let b, depth = 0, buf = [], begun = false;
+export async function readJSON(file, out) {
+  let byte, depth = 0, object = false, string = false, buffer = [];
 
-  while (b = file.getByte(), b !== -1) {
-    switch (b) {
+  while (byte = file.getByte(), byte !== -1) {
+    switch (byte) {
       case LEFT_PAREN:
       case LEFT_BRACK:
-        begun = true;
+        object = true;
         depth++;
         break;
       case RIGHT_PAREN:
       case RIGHT_BRACK:
         depth--;
         break;
+      case QUOTE:
+        if (buffer[buffer.length - 1] !== ESCAPE_CHAR) string = !string;
+        break;
     }
-    if (!WHITESPACE.includes(b)) {
-      buf.push(b);
-      if (begun && depth === 0) {
-        const output = buf.map(c => String.fromCharCode(c)).join('');
+    if (!string) {
+      if (!WHITESPACE.includes(byte)) buffer.push(byte);
+      if (object && depth === 0 || buffer.length && byte === WHITESPACE[1]) {
+        const output = buffer.map(c => String.fromCharCode(c)).join('');
         await put(out, output);
-        begun = false;
-        buf = [];
+        object = false;
+        buffer = [];
       }
-    }
+    } else buffer.push(byte);
   }
 
-  if (buf.length) {
-    const output = buf.map(c => String.fromCharCode(c)).join('');
+  if (buffer.length) {
+    const output = buffer.map(c => String.fromCharCode(c)).join('');
     await put(out, output);
   }
 };

@@ -1,6 +1,7 @@
-import { clone } from './dsl_utils.js';
 import Types from './rules/types.js';
 const { isType, notType, invariant: inv, syntaxError } = Types;
+
+const clone = o => Object.assign({}, o);
 
 const notTerminatingExpression = notType.bind(null, [
   Types.SelectExpression,
@@ -21,6 +22,7 @@ export default function parser({ tokens, toSource }) {
   const invariant = (...x) => inv(...x, root.source);
 
   const validLHS = invariant.bind(null, [
+    Types.Wildcard,
     Types.FieldIdentifier,
     Types.NumberLiteral,
     Types.StringLiteral,
@@ -30,6 +32,7 @@ export default function parser({ tokens, toSource }) {
   ]);
 
   const validRHS = invariant.bind(null, [
+    Types.Wildcard,
     Types.FieldIdentifier,
     Types.NumberLiteral,
     Types.StringLiteral,
@@ -65,6 +68,18 @@ export default function parser({ tokens, toSource }) {
       fields: [],
       position: clone(symbol.position),
     };
+
+    const unaryLiterals = [
+      Types.StringLiteral,
+      Types.NumberLiteral,
+      Types.BooleanLiteral,
+      Types.ArrayLiteral,
+      Types.NullLiteral,
+      Types.CallExpression,
+    ];
+
+    const isUnaryLiteral = isType.bind(null, unaryLiterals);
+
     while (notTerminatingExpression(next.peek())) {
       factor();
 
@@ -72,6 +87,7 @@ export default function parser({ tokens, toSource }) {
         Types.Wildcard,
         Types.FieldIdentifier,
         Types.AsExpression,
+        ...unaryLiterals,
       ], currentNode);
 
       node.fields.push(fieldNode);
@@ -89,6 +105,7 @@ export default function parser({ tokens, toSource }) {
         Types.NumberLiteral,
         Types.BooleanLiteral,
         Types.ArrayLiteral,
+        Types.NullLiteral,
         Types.FieldIdentifier,
         Types.CallExpression,
       ], currentNode),
@@ -96,6 +113,7 @@ export default function parser({ tokens, toSource }) {
     };
     factor();
     node.prop = invariant([
+      Types.Wildcard,
       Types.StringLiteral,
       Types.FieldIdentifier
     ], currentNode);

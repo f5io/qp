@@ -66,7 +66,7 @@ const rules = {
   },
   [18]: {
     type: Types.BinaryOperator,
-    re: /^(>=?|<[=|>]?|!?%?=|IS(?: NOT)?|(?:NOT )?(?:IN|i?LIKE))(?= )/,
+    re: /^(>=?|<[=|>]?|!?%?=|(?:IS(?: NOT)?|(?:NOT )?(?:IN|i?LIKE))(?![a-z]))(?= )?/,
     tokens: prop(1),
   },
   [20]: {
@@ -79,7 +79,7 @@ const rules = {
   },
   [22]: {
     type: Types.FieldIdentifier,
-    re: /^(?!%|-|_|true|false|null|"|'|\d)([^\s)][\w_.-]*(?!%|_))(?=,|[\s)]|[);]?$)/,
+    re: /^(?!%|-|_|true|false|null|"|'|\d)([^\s)][\w_.-]*(?!%|_))(?=,|[\s)]|=|<|>|!|%|[);]?$)/,
     tokens: prop(1),
   },
   [24]: {
