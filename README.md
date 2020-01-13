@@ -7,7 +7,7 @@ Automatically interprets Newline Delimited JSON (NDJSON) from `stdin`,
 including pretty-printed NDJSON, and can optionally query top-level array input.
 
 - a familiar and approachable SQL-like query language
-- `~600kb` binary, with _zero_ runtime dependencies
+- `~600kb` binary, with _zero_ runtime dependencies (compiled with [QuickJS](https://bellard.org/quickjs/))
 
 # Install
 

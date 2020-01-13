@@ -4,11 +4,11 @@ set -x
 : ${VERSION:="1.0.0"}
 
 url="https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz"
-curl -sL $url | tar -zxf -
+curl -sL $url | tar -zxf - -C . --strip-components 1 "ghr_v${GHR_VERSION}_linux_amd64/ghr"
 
 for file in bin/release/*; do
   filename="$(basename $file)"
-  echo "$(openssl dgst -sha256 "$file" | cut -d' ' -f2) - $filename" > bin/release/SHASUM
+  echo "$(openssl dgst -sha256 "$file" | cut -d' ' -f2) - $filename" >> bin/release/SHASUM
 done
 
 cat bin/release/SHASUM

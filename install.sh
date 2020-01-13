@@ -2,9 +2,9 @@ set -e
 
 : ${VERSION:="1.0.0"}
 
-case "$OSTYPE" in
-  darwin*) platform="darwin" ;;
-  linux*) platform="linux" ;;
+case "$(uname)" in
+  Darwin) platform="darwin" ;;
+  Linux) platform="linux" ;;
   *) echo "unknown platform"; exit 1 ;;
 esac
 
