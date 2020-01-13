@@ -1,8 +1,8 @@
-import Types from '../rules/types.js';
+import Types from './rules/types.js';
 const { isType, invariant: inv } = Types;
 
 const unsupported = syntax => {
-  throw new Error(`Unsupported syntax: ${syntax} (javascript)`);
+  throw new Error(`Unsupported syntax: ${syntax}`);
 };
 
 const eq = (left, right) => input => left(input) === right(input);
@@ -31,24 +31,21 @@ const operatorMapping = {
 };
 
 const toRegex = (str, flags) =>
-  new RegExp(str.replace(/_/g, '.').replace(/%/g, '.*'), flags);
+  new RegExp(String(str).replace(/_/g, '.').replace(/%/g, '.*'), flags);
 
 const defaultCallExpressions = {
   date: (node, { traverseArray, Types, invariant }) => {
     const args = traverseArray(node.arguments);
     return input => new Date(...args.map(f => f(input)));
   },
-  length: (node, { traverseNode }) => {
-    const field = traverseNode(node.arguments[0]);
-    return input => field(input)?.length;
-  },
-  from_entries: (node, { traverseArray }) => {
-    const kv = traverseArray(node.arguments);
+  from_entries: (node, { traverseArray, invariant }) => {
+    const args = node.arguments.map(x => invariant(Types.ArrayLiteral, x));
+    const kv = traverseArray(args);
     return input => Object.fromEntries(kv.map(f => f(input)));
   }
 };
 
-const toQuery = (ast, { callExpressions = {} } = {}) => {
+const toRuntime = (ast, { callExpressions = {} } = {}) => {
   let select = x => x;
   let offset = 0;
   let limit = Infinity;
@@ -101,10 +98,18 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
       case 'ilike':
       case 'not like':
       case 'not ilike': {
-        const types = [ Types.MatcherLiteral, Types.StringLiteral ];
-        const [ matcher, target ] = isType(types, node.right)
-          ? [ node.right, node.left ]
-          : [ invariant(types, node.left), node.right ];
+        const types = [
+          Types.StringLiteral,
+          Types.NumberLiteral,
+          Types.NullLiteral,
+          Types.BooleanLiteral,
+        ];
+
+        const validLHS = [ Types.FieldIdentifier, ...types ];
+        const validRHS = [ Types.MatcherLiteral, ...types ];
+        
+        const target = invariant(validLHS, node.left);
+        const matcher = invariant(validRHS, node.right);
 
         const flags = node.operator.value.includes('il') ? 'i' : void 0;
         const regex = toRegex(matcher.value, flags);
@@ -167,7 +172,7 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
       case Types.LogicalExpression: {
         const left = traverseNode(node.left);
         const right = traverseNode(node.right);
-        const op = traverseNode(nodde.operator);
+        const op = traverseNode(node.operator);
         return op(left, right);
       }
       case Types.BinaryExpression:
@@ -200,4 +205,4 @@ const toQuery = (ast, { callExpressions = {} } = {}) => {
   return filter;
 };
 
-export default toQuery; 
+export default toRuntime; 

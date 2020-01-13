@@ -1,4 +1,4 @@
-import { flatten, mirror, toArray } from '../dsl_utils.js';
+import { flatten, mirror, toArray } from '../utils.js';
 
 const Types = mirror([
   'Query',
@@ -56,10 +56,10 @@ const Ignore = Symbol('Ignore');
 /* eslint-disable indent */
 
 const syntaxError = (original, position) =>
-  new SyntaxError(`  Your query contained a syntax error, near:
+  new SyntaxError(`Your query contained a syntax error, near:
  
 ${original.split('\n').map((line, i) => {
-  const result = `    ${line.trim()}`;
+  const result = `  ${line.trim()}`;
   return position.line === i
     ? `${result}
     ${' '.repeat(position.start)}${'~'.repeat(Math.max(position.end - position.start, 1))}
@@ -70,21 +70,21 @@ ${original.split('\n').map((line, i) => {
   `);
 
 const typeError = (original, position, node, validTypes) =>
-  new TypeError(`  Your query contained a type error:
+  new TypeError(`Your query contained a type error:
  
 ${original.split('\n').map((line, i) => {
-  const result = `    ${line.trim()}`;
+  const result = `  ${line.trim()}`;
   return position.line === i
-    ? `${result}
+    ? `  ${result}
     ${' '.repeat(position.start)}${'~'.repeat(Math.max(position.end - position.start, 1))}
     ${' '.repeat(position.start)} `
     : result;
 }).join('\n')}
-    One of the following types was expected:
+  One of the following types was expected:
 
-    ${validTypes.map(t => ` - ${t}`).join('\n    ')}
+  ${validTypes.map(t => ` - ${t}`).join('\n  ')}
 
-    But found ${node && node.type || 'Nothing'} ${printToken(node)}
+  But found ${node && node.type || 'Nothing'} \`${printToken(node)}\`
   `);
 
 /* eslint-enable indent */

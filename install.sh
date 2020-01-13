@@ -1,21 +1,19 @@
-set +e
+set -e
 
-: ${CSP_VERSION:="1.0.8"}
-: ${QJS_VERSION:="2019-12-21"}
+: ${VERSION:="0.0.1"}
 
-: ${ARCH:="darwin"}
+case "$OSTYPE" in
+  darwin*) platform="darwin" ;;
+  linux*) platform="linux" ;;
+  *) echo "unknown platform"; exit 1 ;;
+esac
 
-echo "retrieving @paybase/csp@${CSP_VERSION}"
-curl "https://unpkg.com/@paybase/csp@$CSP_VERSION/dist/esm/index.js" > ./src/csp.js
+url="https://github.com/paybase/qp/releases/download/$VERSION/qp-$VERSION-$platform.tar.gz"
 
-echo "retrieving quickjs@${QJS_VERSION}"
-mkdir -p qjs && curl "https://bellard.org/quickjs/quickjs-${QJS_VERSION}.tar.xz" | tar xJf - -C qjs --strip-components 1
+echo "👌  fetching download for qp $VERSION ($platform)"
+curl -sL $url | tar -zxf - -C /usr/local/bin
+echo "
+🎉  successfully installed qp $VERSION ($platform)
 
-if [ "$ARCH" = "win" ]; then
-  echo "editing makefile for windows"
-  sed -i 's/#CONFIG_WIN32/CONFIG_WIN32/' qjs/Makefile
-fi
-
-cd qjs && make
-
-
+see \`qp --help\` for usage.
+"

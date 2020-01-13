@@ -2,78 +2,124 @@ const rs = '\x1b[31m';
 const ul = '\x1b[4m';
 const cl = '\x1b[0m';
 
-const asExpr = `
-  ${ul}AsExpression${cl}:
+export const VERSION = '0.0.1';
 
-  As expressions allow the transformation of the input after it matches a predicate.
-  It also offers the ability to provide additional information for the output.
+const logo = `
+  ▄▀▀▀█ █▀▀▀▄
+  █   █ █   █   qp - ${VERSION}
+   ▀▀ █ ▒ ▀▀    query-pipe: command-line (ND)JSON querying 
+  · - █▄▄ ▪ ·  ·------------------------------------------·
+      ▀`;
 
-    [ * | \`FieldIdentifier\` | \`(*)Literal\` | \`CallExpression\` ] AS \`FieldIdentifier\`
+export const syntax = `${logo}
+  ${ul}Syntax${cl}
 
-  Examples:
+  The query language is heavily inspired by SQL, offering a
+  familiar and approachable syntax. Behind the scenes it uses
+  a recursive descent parser to adhere to logical operator precedence.
 
-    - SELECT a AS b, b AS c
-    - SELECT a.b.c.d AS d
-    - SELECT (1, 2, 3) AS e
-    - SELECT DATE() AS now`;
+      [ select [ * | field_ident | call_expr | (*)_lit | as_expression ] ]
+        where [ bin_expr | logical_expr ] [ and | or ] [ ... ]
+        [ limit num_lit ]
+        [ offset num_lit ]
 
-const binExpr = `
-  ${ul}BinaryExpression${cl}:
+  In the examples below, it is assumed that qp is receiving a stream of input
+  structured in the following way:
 
-  Binary expressions allow the filtering of the input to a defined predicate. If
-  the input does not match the predicate then it will not be output.
+      {
+        "id": <id>,
+        "name": { "first": "<name>" },
+        "age": <age>,
+        "dob": "<date>",
+        "data": [ "random", ... ]
+      }
 
-    [ \`FieldIdentifier\` | \`(Number|String|Boolean|Matcher)Literal\` | \`CallExpression\` ]
-      \`BinaryOperator\`
-      [ \`FieldIdentifier\` | \`(*)Literal\` | \`CallExpression\` ]
+  ${ul}Transforming${cl}
 
+  By default qp assumes \`select *\`, acting as an identity function over the JSON input.
+  Using a select clause you are able to transform the output of your filter.
+
+  - \`select id where id >= 3\` - [\`{"id":3}\`, \`{"id":4}\`, ...] 
+  - \`select id as * where id >= 3\` - [\`3\`, \`4\`, ...]
+  - \`select data.0 as *\` - [\`"random"\` ...]
+  - \`select age, name.first as firstName where age > 42\` - [\`{"age":43, "firstName":"<name>"}\`, ...]
+  - \`select age as number\` - [\`{"number":<age>}\`, ...]
+  - \`select date(dob) as birthYear\` - [\`{"birthYear":"0000-00-00T00:00:00.000Z"}\`, ...]
+  - \`select 1\` - [\`1\` \`1\` ...]
+  - \`select true\` - [\`true\` \`true\` ...]
+  - \`select null\` - [\`null\` \`null\` ...]
+  - \`select (1,2,3)\` - [\`1,2,3]\` ...]
+  - \`select date()\` - [\`2020-01-11T00:00:00.000Z"\` ...]
+  - \`select 1 as one\` - [\`one":1}\` \`one":1}\` ...]
+
+  ${ul}Filtering${cl}
+
+  By default qp assumes \`where 1 = 1\` producing JSON output for every JSON input it receives.
   Logical operator precedence is adhered to so the following are ${ul}not${cl} equivalent:
 
-    1) WHERE (a = b AND b = c) OR b = d
-    2) WHERE a = b AND (b = c OR b = d)
+  - \`where (age > 30 and age <= 40) or name.first = "Orion"\`
+  - \`where age > 30 and (age <= 40 or name.first = "Orion")\`
 
-  As you can see, use of parentheses can be used to force a specific precedence:
+  ${ul}Equality & Order Comparison Operators${cl}:
 
-    1) if \`a\` is equal to \`b\` and \`b\` is equal to \`c\`
-       ${ul}or${cl} \`b\` is equal to \`d\`, so the following inputs will both pass:
+  Either side of an equality operator can be a field identifier, literal or call expression.
 
-       - { "a": 1, "b": 1, "c": 1 }
-       - { "a": 4, "b": 1, "c": 24, "d": 1 }
+  - \`=\`, \`is\` - strict JS equality (equivalent to \`===\`)
+  - \`!=\`, \`<>\`, \`is not\` - strict JS inequality (equivalent to \`!==\`)
+  - \`%=\` - non-strict JS equality (equivalent to \`==\`)
+  - \`%!=\` - non-strict JS inequality (equivialent to \`!=\`)
+  - \`>\`, \`>=\`, \`<=\`, \`<\` - ordering comparison JS
 
-    2) if \`a\` is equal to \`b\` ${ul}and${cl} \`b\` is equal to \`c\`
-       or \`b\` is equal to \`d\`, so the following inputs will both pass:
+  ${ul}Other Operators${cl}:
 
-       - { "a": 1, "b": 1, "c": 1 }
-       - { "a": 1, "b": 1, "c": 24, "d": 1 }
+  - \`like\`, \`not like\` - case-sensitive JS regex
+  - \`ilike\`, \`not ilike\` - case-insensitive JS regex
+  - \`in\`, \`not in\` - lookup in JS array
 
-  Binary Operators:
+  For example:
 
-    \`=\` | \`IS\`                  - strict JS equality (equivalent to \`===\`)
-    \`!=\` | \`<>\` | \`IS NOT\`      - strict JS inequality (equivalent to \`!==\`)
-    \`%=\`                        - non-strict JS equality (equivalent to \`==\`)
-    \`%!=\`                       - non-strict JS inequality (equivialent to \`!=\`)
-    \`>\` | \`>=\` | \`<=\` | \`<\`     - ordering comparison JS
-    \`LIKE\` | \`NOT LIKE\`         - case-sensitive JS regex
-    \`iLIKE\` | \`NOT iLIKE\`       - case-insensitive JS regex
-    \`IN\` | \`NOT IN\`             - lookup in JS array
+  - \`select name where name.first like _am%\` - [\`{"name":{"first":"Sam"}}\`, \`{"name":{"first":"Cameron"}}\`, ...]
+  - \`select id as * where id like 1\` - [\`1\`, \`10\`, \`11\`, \`12\` ...]
+  - \`select name.first as n where name.first ilike "^[aeiou]"\` - [\`{"n":"Abed"}\`, \`{"n":"Izzy"}\`, ...]
+  - \`select * where id in (1,2,3)\` - [\`{"id":1, ...rest}\`, \`{"id":2, ...rest}\`, \`{"id":3, ...rest}\`, ...]
+  - \`select id as * where "tails" in data\` - [\`0\`, \`5\`, ...]
 
-  Examples:
+  ${ul}Call Expressions${cl}
 
-    - WHERE a = 2 AND b %!= "4"
-    - WHERE a >= 2 AND a < 5
-    - WHERE b LIKE _foo% OR c NOT iLIKE %bar%
-    - WHERE c IN (1, 2, 3) AND d NOT IN (e.f.g, 5)
-    - WHERE LENGTH(posts) > 10
-    - WHERE posts.length > 10`;
+  qp provides a couple of utility functions that can be used in your query.
+
+  The \`date()\` function is synonymous with the javascript \`Date()\` constructor.
+
+      select date() as now
+      where date(dob) >= date("1984-01-01")
+
+  For more complex object construction you can use \`from_entries((k, v)...)\`.
+
+      select from_entries(
+        ("now", date()),
+        ("nested", from_entries((name.first, age))),
+        ("copy", *)
+      )
+
+  Which would output:
+
+      {
+        "now":"2020-01-11T00:00:00.000Z",
+        "nested": { "Sam": 40 },
+        "copy": { ...copy of input }
+      }
+
+  There is potential for new call expressions to be added to qp, or, with a slightly larger
+  binary size, facilitate custom call expressions at runtime.`;
+
 
 const usage = `
   ${ul}Usage${cl}:
 
-    qp [...options] [-q <query>]
+    qp [...flags] [<query>]
 
-  ${ul}Options${cl}:
+  ${ul}Flags${cl}:
 
-    -q,  --query <query>   - a SQL-like query
     -p,  --pretty          - output pretty JSON
     -a,  --no-array        - disable processing of top-level arrays
     -b,  --buffer          - disable forced flushing of stdout for every JSON
@@ -81,40 +127,16 @@ const usage = `
     -x                     - silence JSON parse errors (stderr)
 
     -h,  --help            - display this help message
-    -sy, --syntax          - display the syntax guide
     -v,  --version         - print version
+    --syntax               - display the syntax guide
 
   ${ul}Example usage${cl}:
 
-    $ tail -f input.log | qp -q 'WHERE a > b' > output.log
-    $ cat input.json | qp -q 'SELECT a AS b' > ouput.json`;
+    $ tail -f input.log | qp -xs 'where a > b' > output.log
+    $ cat input.json | qp select a as b > ouput.json`;
 
-export const syntax = `
-  The query language is heavily inspired by SQL, offering a
-  familiar and approachable syntax. Behind the scenes it uses
-  a recursive descent parser to adhere to logical operator precedence.
 
-    [ SELECT [ * | \`FieldIdentifier\` | \`AsExpression\` ] ]
-      WHERE \`BinaryExpression\`
-        [ [ AND \`BinaryExpression\` | OR \`BinaryExpression\` ] [, ...] ]
-      [ LIMIT \`NumberLiteral\` ]
-      [ OFFSET \`NumberLiteral\` ]
-  ${asExpr}
-  ${binExpr}
-
-  ${ul}Example queries${cl}:
-
-  - SELECT * WHERE (a = true AND b IS NOT NULL) OR (c > 100 AND d = "foo")
-  - SELECT age WHERE name LIKE _rock% AND age NOT IN (21, 35)
-  - WHERE DATE(profile.dob) > DATE("1984-01-12") LIMIT 10`;
-
-export const VERSION = '0.0.1';
-export const help = `
-  ▄▀▀▀█ █▀▀▀▄
-  █   █ █   █   qp - ${VERSION}
-   ▀▀ █ ▒ ▀▀    query-pipe: command-line (ND)JSON querying 
-  · - █▄▄ ▪ ·  ·------------------------------------------·
-      ▀      
+export const help = `${logo}
 
   A tool for processing and filtering JSON from the command-line.
   Automatically interprets Newline Delimited JSON (NDJSON) from \`stdin\`,

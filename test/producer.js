@@ -4,17 +4,17 @@ import * as std from 'std';
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const profiles = [
-  { "profile": { "dob": "1912-06-23" }, "name": "Turing", "age": 108, "alive": false },
-  { "profile": { "dob": "1938-01-10" }, "name": "Knuth", "age": 80, "alive": true },
-  { "profile": { "dob": "1955-06-08" }, "name": "Berners-Lee", "age": 63, "alive": true },
-  { "profile": { "dob": "1906-12-09" }, "name": "Hopper", "age": 112, "alive": false },
-  { "profile": { "dob": "1872-05-18" }, "name": "Russell", "age": 146, "alive": false },
-  { "profile": { "dob": "1969-12-28" }, "name": "Torvalds", "age": 48, "alive": true },
+  { "dob": "1979-06-23", "name": { "first": "Sam" }, "age": 40, "data": [ "heads" ] },
+  { "dob": "1986-01-10", "name": { "first": "Izzy" }, "age": 34, "data": [ "tails" ] },
+  { "dob": "1992-06-08", "name": { "first": "Abed" }, "age": 27, "data": [ "none" ] },
+  { "dob": "2000-12-09", "name": { "first": "Orion" }, "age": 19, "data": [ "tails" ] },
+  { "dob": "1984-05-18", "name": { "first": "Cameron" }, "age": 35, "data": [ "none" ] },
+  { "dob": "1993-12-28", "name": { "first": "Ana" }, "age": 26, "data": [ "heads" ] },
 ];
 
 (async () => {
   for (let i = 0; i < Infinity; i++) {
-    console.log(JSON.stringify({ id: i, ...profiles[i % 5] }));
+    console.log(JSON.stringify({ id: i, ...profiles[i % profiles.length] }));
     std.out.flush();
     await timeout(50);
   }

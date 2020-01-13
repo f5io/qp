@@ -39,7 +39,7 @@ export async function readJSON(file, out) {
     }
     if (!string) {
       if (!WHITESPACE.includes(byte)) buffer.push(byte);
-      if (object && depth === 0 || buffer.length && byte === WHITESPACE[1]) {
+      if ((object || buffer.length && byte === WHITESPACE[1]) && depth === 0) {
         const output = buffer.map(c => String.fromCharCode(c)).join('');
         await put(out, output);
         object = false;

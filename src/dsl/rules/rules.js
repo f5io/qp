@@ -1,5 +1,5 @@
 import Types from './types.js';
-import { prop, compose } from '../dsl_utils.js';
+import { prop, compose } from '../utils.js';
 
 const rules = {
   [1]: {

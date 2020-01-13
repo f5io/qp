@@ -1,8 +1,10 @@
 : ${ARCH:="darwin"}
+: ${VERSION:="0.0.1"}
 
-set +e
+set -x 
 
 mkdir -p "bin/$ARCH"
+mkdir -p "bin/release"
 
 #  -fno-bigint \ - not supported in quickjs versions prior to 2020-01-05
 
@@ -16,3 +18,5 @@ mkdir -p "bin/$ARCH"
   src/main.js
 
 ls -lh "bin/$ARCH"
+
+tar -zcf "`pwd`/bin/release/qp-$VERSION-$ARCH.tar.gz" -C "`pwd`/bin/$ARCH" qp

@@ -23,11 +23,15 @@ commands:
             ARCH=<< parameters.arch >> \
               CSP_VERSION=<< parameters.csp_version >> \
               QJS_VERSION=<< parameters.qjs_version >> \
-              sh install.sh
+              sh build/vendor.sh
       - run:
           name: 'build bin'
           command: |
-            ARCH=<< parameters.arch >> sh build.sh
+            ARCH=<< parameters.arch >> sh build/compile.sh
+      - run:
+          name: 'run tests'
+          command: |
+            ARCH=<< paramters.arch >> sh test/test.sh
       - persist_to_workspace:
           root: . 
           paths:
@@ -55,7 +59,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: tree bin
+      - run: ls -lh bin/release
 
 workflows:
   version: 2
