@@ -31,7 +31,7 @@ commands:
       - run:
           name: 'run tests'
           command: |
-            ARCH=<< paramters.arch >> sh test/test.sh
+            ARCH=<< parameters.arch >> sh test/test.sh
       - persist_to_workspace:
           root: . 
           paths:
