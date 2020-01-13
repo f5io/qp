@@ -1,9 +1,8 @@
+<img alt="qp: query-pipe" src="./logo.svg" width="150"/>
 
-    ▄▀▀▀█ █▀▀▀▄
-    █   █ █   █   qp - 0.0.1
-     ▀▀ █ ▒ ▀▀    query-pipe: command-line (ND)JSON querying 
-    · - █▄▄ ▪ ·  ·------------------------------------------·
-        ▀
+qp - 0.0.1
+
+query-pipe: command-line (ND)JSON querying
 
 A tool for filtering and transforming JSON from the command-line.
 Automatically interprets Newline Delimited JSON (NDJSON) from `stdin`,
