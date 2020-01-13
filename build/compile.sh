@@ -1,7 +1,7 @@
+set -x 
+
 : ${ARCH:="darwin"}
 : ${VERSION:="1.0.0"}
-
-set -x 
 
 mkdir -p "bin/$ARCH"
 mkdir -p "bin/release"
