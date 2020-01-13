@@ -60,6 +60,8 @@ jobs:
       - attach_workspace:
           at: .
       - run: ls -lh bin/release
+      - store_artifacts:
+          path: ./bin/release
 
 workflows:
   version: 2
