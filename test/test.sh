@@ -2,6 +2,8 @@
 
 set -x
 
+export TZ=utc
+
 assert_eq() {
   if [ "$1" != "$2" ]; then
     echo "error: \"$1\" is not equal to \"$2\""
@@ -18,14 +20,14 @@ assert() {
 
 assert_err() {
   local actual="`echo "$1" | ./bin/$ARCH/qp "$2" 2>&1 | tr '\n' ','`"
-  local expected=`echo "$3" | tr '\n' ','`
+  local expected="`echo "$3" | tr '\n' ','`"
   echo "checking for err: $expected"
   assert_eq "$actual" "$expected"
 }
 
 assert_silent_err() {
   local actual="`echo "$1" | ./bin/$ARCH/qp -x "$2" 2>&1 | tr '\n' ','`"
-  local expected=`echo "$3" | tr '\n' ','`
+  local expected="`echo "$3" | tr '\n' ','`"
   echo "checking for err: $expected"
   assert_eq "$actual" "$expected"
 }
