@@ -17,7 +17,7 @@ cat bin/release/SHASUM
   -u paybase \
   -r qp \
   -n $VERSION \
-  -c $COMMIT_SHA \
+  -c "$CIRCLE_SHA1" \
   -delete \
   $VERSION bin/release/
 
