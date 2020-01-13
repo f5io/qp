@@ -8,5 +8,7 @@ for file in bin/release/*; do
   echo "$(openssl dgst -sha256 "$file" | cut -d' ' -f2) - $filename" > bin/release/SHASUM
 done
 
+cat bin/release/SHASUM
+
 #./ghr -u paybase -r qp $CIRCLE_TAG bin/release/
 
