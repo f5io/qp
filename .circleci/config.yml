@@ -65,10 +65,7 @@ jobs:
       - run:
           name: 'publish to github'
           command: sh build/release.sh
-    filters:
-      branches:
-        only: master 
-
+    
 workflows:
   version: 2
   build:
@@ -79,6 +76,9 @@ workflows:
           requires:
             - build_darwin
             - build_linux
+          filters:
+            branches:
+              only: master 
 
 
 
