@@ -11,7 +11,7 @@ including pretty-printed NDJSON, and can optionally query top-level array input.
 
 # Install
 
-    $ VERSION=1.0.1 curl -o- https://raw.githubusercontent.com/paybase/qp/master/install.sh | sh
+    $ VERSION=1.0.0 curl -o- https://raw.githubusercontent.com/paybase/qp/master/install.sh | sh
 
 # Usage
 
@@ -25,7 +25,7 @@ Without any arguments qp is a straight stdin to stdout pipe for valid JSON.
 - `-s`, `--strict` - exit on JSON parse error with exit code 1
 - `-x` - silence JSON parse errors (stderr)
 
-- `-h`, `--help` - display this help message
+- `-h`, `--help` - display help message
 - `-sy`, `--syntax` - display the syntax guide
 - `-v`, `--version` - print version
 
@@ -139,7 +139,7 @@ To install QuickJS and the @paybase/csp dependency, run:
     $ sh build/vendor.sh
 
 You can provide `QJS_VERSION` and `CSP_VERSION` environment variables to the command above.
-By default the script will install QuickJS@2019-12-21 and @paybase/csp@1.0.8.
+By default the script will install `QuickJS@2019-12-21` and `@paybase/csp@1.0.8`.
 
 It may take a while to compile QuickJS, however when that process is complete, you can
 build qp by running:
