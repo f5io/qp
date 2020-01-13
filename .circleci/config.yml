@@ -32,10 +32,12 @@ commands:
           name: 'run tests'
           command: |
             ARCH=<< parameters.arch >> sh test/test.sh
+      - store_artifacts:
+          path: ./bin/release
       - persist_to_workspace:
           root: . 
           paths:
-            - bin/
+            - bin/release
        
 
 jobs:
@@ -60,8 +62,12 @@ jobs:
       - attach_workspace:
           at: .
       - run: ls -lh bin/release
-      - store_artifacts:
-          path: ./bin/release
+      - run:
+          name: 'publish to github'
+          command: sh build/release.sh
+    filters:
+      branches:
+        only: master 
 
 workflows:
   version: 2

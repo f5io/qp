@@ -26,8 +26,8 @@ Without any arguments qp is a straight stdin to stdout pipe for valid JSON.
 - `-x` - silence JSON parse errors (stderr)
 
 - `-h`, `--help` - display help message
-- `-sy`, `--syntax` - display the syntax guide
 - `-v`, `--version` - print version
+- `--syntax` - display the syntax guide
 
 # Syntax
 
