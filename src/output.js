@@ -12,6 +12,7 @@ const logo = `
       ▀`;
 
 export const syntax = `${logo}
+
   ${ul}Syntax${cl}
 
   The query language is heavily inspired by SQL, offering a
@@ -93,7 +94,8 @@ export const syntax = `${logo}
       select date() as now
       where date(dob) >= date("1984-01-01")
 
-  For more complex object construction you can use \`from_entries((k, v)...)\`.
+  For more complex object construction you can use \`from_entries((k, v)...)\`. It takes
+  a variadic number of tuples of (key, value) and can be used recursively.
 
       select from_entries(
         ("now", date()),
@@ -110,7 +112,8 @@ export const syntax = `${logo}
       }
 
   There is potential for new call expressions to be added to qp, or, with a slightly larger
-  binary size, facilitate custom call expressions at runtime.`;
+  binary size, facilitate custom call expressions at runtime.
+`;
 
 
 const usage = `

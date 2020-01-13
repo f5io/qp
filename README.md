@@ -9,7 +9,12 @@ A tool for filtering and transforming JSON from the command-line.
 Automatically interprets Newline Delimited JSON (NDJSON) from `stdin`,
 including pretty-printed NDJSON, and can optionally query top-level array input.
 
+- a familiar and approachable SQL-like query language
+- `~600kb` binary, with _zero_ runtime dependencies
+
 # Install
+
+    $ VERSION=1.0.1 curl -o- https://raw.githubusercontent.com/paybase/qp/master/install.sh | sh
 
 # Usage
 
