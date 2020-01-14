@@ -68,7 +68,7 @@ const toRuntime = (ast, { callExpressions = {} } = {}) => {
   }
 
   function traverseSelect(node) {
-    const roots = [], keyed = [];
+    const keyed = [];
 
     for (const field of node.fields) {
       if (isType(Types.FieldIdentifier, field)) {
@@ -81,15 +81,10 @@ const toRuntime = (ast, { callExpressions = {} } = {}) => {
         } else {
           keyed.push([ field.prop.value, value ]);
         }
-      } else if (isType(Types.Wildcard, field)) {
-        roots.push(traverseNode(field));
       } else return traverseNode(field);
     }
 
-    return input => Object.assign(
-      roots.reduce((acc, f) => Object.assign(acc, f(input)), {}),
-      Object.fromEntries(keyed.map(([ k, v ]) => [ k, v(input) ])),
-    );
+    return input => Object.fromEntries(keyed.map(([ k, v ]) => [ k, v(input) ]));
   }
 
   function traverseBinaryExpression(node) {

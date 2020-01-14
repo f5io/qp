@@ -11,7 +11,7 @@ including pretty-printed NDJSON, and can optionally query top-level array input.
 
 # Install
 
-    $ VERSION=1.0.0 curl -o- https://raw.githubusercontent.com/paybase/qp/master/install.sh | sh
+    $ curl -o- https://raw.githubusercontent.com/paybase/qp/master/install.sh | sh
 
 # Usage
 
