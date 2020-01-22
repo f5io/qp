@@ -276,12 +276,12 @@ export default function parser({ tokens, toSource }) {
     while (n = next.peek(from++)) {
       if (isType(Types.ParenRight, n) && depth === 0) {
         break;
+      } else if (isType(Types.BinaryOperator, n)) {
+        return true;
       } else if (isType([ Types.ParenLeft, Types.CallExpression ], n)) {
         depth++;
       } else if (isType(Types.ParenRight, n)) {
         depth--;
-      } else if (isType(Types.BinaryOperator, n)) {
-        return true;
       }
     }
     return false;
