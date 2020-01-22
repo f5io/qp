@@ -1,7 +1,7 @@
 set -x
 
 : ${GHR_VERSION:="0.13.0"}
-: ${VERSION:="1.0.0"}
+: ${VERSION:="1.0.1"}
 
 url="https://github.com/tcnksm/ghr/releases/download/v${GHR_VERSION}/ghr_v${GHR_VERSION}_linux_amd64.tar.gz"
 curl -sL $url | tar -zxf - -C . --strip-components 1 "ghr_v${GHR_VERSION}_linux_amd64/ghr"

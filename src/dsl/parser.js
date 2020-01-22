@@ -271,6 +271,22 @@ export default function parser({ tokens, toSource }) {
     }
   }
 
+  function chompToParenRightIsSubExpr() {
+    let n, from = 1, depth = 0;
+    while (n = next.peek(from++)) {
+      if (isType(Types.ParenRight, n) && depth === 0) {
+        break;
+      } else if (isType([ Types.ParenLeft, Types.CallExpression ], n)) {
+        depth++;
+      } else if (isType(Types.ParenRight, n)) {
+        depth--;
+      } else if (isType(Types.BinaryOperator, n)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   function factor() {
     symbol = next();
     switch (symbol.type) {
@@ -309,14 +325,13 @@ export default function parser({ tokens, toSource }) {
         return;
       case Types.ParenLeft: {
         if (
-          isType([ Types.Punctuation, Types.ParenRight ], next.peek(2))
-          || isType(Types.ParenLeft, next.peek()) // support arrays within arrays
-          || isType(Types.OptionExpression, next.peek(-1))
+          notType(Types.OptionExpression, next.peek(-1))
+          && chompToParenRightIsSubExpr()
         ) {
-          array();
-        } else {
           expression();
-          symbol = next(); // skip right paren sub expr
+          symbol = next();
+        } else {
+          array();
         }
 
         if (isType([ Types.LogicalOr, Types.LogicalAnd ], next.peek())) {
