@@ -2,7 +2,7 @@ const rs = '\x1b[31m';
 const ul = '\x1b[4m';
 const cl = '\x1b[0m';
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.0.1';
 
 const logo = `
   ▄▀▀▀█ █▀▀▀▄
