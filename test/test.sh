@@ -85,6 +85,14 @@ assert \
   '"Sam"\n"Izzy"\n"Orion"\n"Cameron"'
 
 assert \
+  "select name.first as * where ((age > 30 and age <= 40) or name.first = 'Orion') limit 2" \
+  '"Sam"\n"Izzy"'
+
+assert \
+  "select name.first as * where (((age > 30 and age <= 40) or name.first = 'Orion') and age = 19) limit 2" \
+  '"Orion"\n"Orion"'
+
+assert \
   "select name.first as * where age > 30 and (age <= 40 or name.first = 'Orion') limit 3" \
   '"Sam"\n"Izzy"\n"Cameron"'
 
