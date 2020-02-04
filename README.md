@@ -10,7 +10,7 @@ including pretty-printed NDJSON, and can optionally query top-level array input.
 - `~600kb` binary, with _zero_ runtime dependencies (compiled with [QuickJS](https://bellard.org/quickjs/))
 
 <p align="center">
-  <img width="600" src="./assets/demo.svg">
+  <img width="780" src="./assets/demo.svg">
 </p>
 
 # Install
