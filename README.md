@@ -10,7 +10,7 @@ including pretty-printed NDJSON, and can optionally query top-level array input.
 - `~600kb` binary, with _zero_ runtime dependencies (compiled with [QuickJS](https://bellard.org/quickjs/))
 
 <p align="center">
-  <img width="780" src="./assets/demo.svg">
+  <a href="https://asciinema.org/a/297830?autoplay=1"><img src="https://asciinema.org/a/297830.png" width="836"/></a>
 </p>
 
 # Install
