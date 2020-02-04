@@ -1,4 +1,4 @@
-<img alt="qp: query-pipe" src="./logo.svg" width="150"/>
+<img alt="qp: query-pipe" src="./assets/logo.svg" width="150"/>
 
 ### query-pipe: command-line (ND)JSON querying
 
@@ -8,6 +8,10 @@ including pretty-printed NDJSON, and can optionally query top-level array input.
 
 - a familiar and approachable SQL-like query language
 - `~600kb` binary, with _zero_ runtime dependencies (compiled with [QuickJS](https://bellard.org/quickjs/))
+
+<p align="center">
+  <img width="600" src="./assets/demo.svg">
+</p>
 
 # Install
 
