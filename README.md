@@ -10,7 +10,7 @@ including pretty-printed NDJSON, and can optionally query top-level array input.
 - `~600kb` binary, with _zero_ runtime dependencies (compiled with [QuickJS](https://bellard.org/quickjs/))
 
 <p align="center">
-  <img alt="query-pipe demo" src="./assets/demo.gif" width="600"/>
+  <img alt="query-pipe demo" src="./assets/demo.gif" width="800"/>
 </p>
 
 # Install
